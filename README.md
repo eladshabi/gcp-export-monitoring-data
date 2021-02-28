@@ -6,7 +6,7 @@ To run the main file, please use the following arguments:
 
 --project - The GCP project id to export the monitoring from.
 
---filter - The cloud monitoring filter expression link to the filter documentation https://cloud.google.com/monitoring/api/v3/filters
+--filter - The cloud monitoring filter expression. Link to the filter documentation https://cloud.google.com/monitoring/api/v3/filters
 
 --weeks - The number of weeks back to get the metric data, minimum one maximum six.
 
