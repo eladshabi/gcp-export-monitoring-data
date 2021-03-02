@@ -17,4 +17,17 @@ To run the main file, please use the following arguments:
 --service_account_credentials_path - the local path to the credentials file, if the ENV parameter "GOOGLE_APPLICATION_CREDENTIALS
 " was set do not add this argument.
 
---output_file_name - the JSON output file name that will include the data. 
+--output_file_name - the JSON output file name that will include the data.
+
+Example:
+
+```
+python main.py --project=elad-playground\
+--weeks=5\
+--days=3\
+--hours=2\
+--filter='metric.type = "pubsub.googleapis.com/topic/send_message_operation_count"'\
+--service_account_credentials_path=<CREDETIALS_PATHC>\
+--output_file_name=pubsub_monitorig_data
+
+```
