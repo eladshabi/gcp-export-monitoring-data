@@ -14,12 +14,13 @@ To run the main file, please use the following arguments:
 
 --hours - The number of hours back to get the metric data.
 
---service_account_credentials_path - the local path to the credentials file, if the ENV parameter "GOOGLE_APPLICATION_CREDENTIALS
-" was set do not add this argument.
-
 --output_file_name - the JSON output file name that will include the data.
 
-Example:
+## Authentication
+
+Please see the [offical python gcp authentication docuemnt](https://googleapis.dev/python/google-api-core/latest/auth.html) 
+
+## Example:
 
 ```
 python main.py --project=<PROJECT-ID> \
