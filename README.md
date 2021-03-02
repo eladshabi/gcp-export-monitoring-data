@@ -27,7 +27,7 @@ python main.py --project=<PROJECT-ID> \
 --days=3 \
 --hours=2 \
 --filter='metric.type = "pubsub.googleapis.com/topic/send_message_operation_count"' \
---service_account_credentials_path=<CREDETIALS_PATHC> \
+--service_account_credentials_path=<CREDETIALS_PATH> \
 --output_file_name=pubsub_monitorig_data
 
 ```
