@@ -1,6 +1,6 @@
 # gcp-export-monitoring-data
 
-This project was made to export time series data points from Google Cloud Monitoring and write it to a local JSON new line file with the point parameters Time (datetime) and value (int).
+This project was made to export time series data points from Google Cloud Monitoring and write it to a local JSON new line delimited file.
 
 To run the main file, please use the following arguments:
 
