@@ -18,7 +18,7 @@ To run the main file, please use the following arguments:
 
 ## Authentication
 
-Please see the [offical python gcp authentication docuemnt](https://googleapis.dev/python/google-api-core/latest/auth.html) 
+Please see the [offical python gcp authentication document](https://googleapis.dev/python/google-api-core/latest/auth.html) 
 
 ## Example:
 
