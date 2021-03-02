@@ -83,15 +83,10 @@ if __name__ == '__main__':
     parser.add_argument("--hours", help="The number of hours back to get the metric data",
                         required=True, type=int)
 
-    parser.add_argument("--service_account_credentials_path")
-
     parser.add_argument("--output_file_name", required=True)
 
     args = parser.parse_args()
 
-    if args.service_account_credentials_path:
-        os.environ[
-            'GOOGLE_APPLICATION_CREDENTIALS'] = args.service_account_credentials_path
 
     raw_metrics_data = get_metric_data(args.project, args.filter, args.weeks, args.days, args.hours)
 
