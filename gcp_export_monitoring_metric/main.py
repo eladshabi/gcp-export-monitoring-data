@@ -28,7 +28,7 @@ def get_metric_data(project_id, metric_filter, weeks_ago, days_ago, hours_ago, a
     if agg:
         aggregation = monitoring_v3.Aggregation(
             {
-                "alignment_period": {"seconds": agg_per},  # 20 minutes
+                "alignment_period": {"seconds": agg_per},
                 "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_MEAN,
             }
         )
@@ -61,7 +61,6 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
                 'time': point.interval.start_time.strftime('%d/%m/%Y %H:%M:%S'),
                 'metric_type': metric_name.type,
                 'resource_type': resource_name.type,
-               # 'value': point.value.int64_value
             }
 
             if agg:
