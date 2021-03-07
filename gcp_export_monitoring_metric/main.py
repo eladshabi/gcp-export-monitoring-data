@@ -30,10 +30,13 @@ def get_metric_data(project_id, metric_filter, weeks_ago, days_ago, hours_ago, a
             {
                 "alignment_period": {"seconds": agg_per},
                 "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_MEAN,
+                "cross_series_reducer": monitoring_v3.Aggregation.Reducer.REDUCE_MEAN
             }
         )
     else:
         aggregation = None
+
+    print("Sending request to the server...")
 
     results = client.list_time_series(
         request={
@@ -45,10 +48,14 @@ def get_metric_data(project_id, metric_filter, weeks_ago, days_ago, hours_ago, a
         }
     )
 
+    print("Got response from the server")
+
     return results
 
 
 def parse_and_write_as_json_new_line(data, output_file_name, agg):
+
+    print("Parsing the data points")
 
     points = []
     for page in data:
@@ -76,10 +83,14 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
 
             points.append(dict_point)
 
+    print(f"Writing the data points into local file {os.getcwd()}/{output_file_name}.json")
+
     with open(f'./{output_file_name}.json', 'w') as out_file:
         for data_point in points:
             out_file.write(json.dumps(data_point))
             out_file.write("\n")
+
+    print("Writing operation completed with no errors")
 
 
 if __name__ == '__main__':
