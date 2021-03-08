@@ -68,12 +68,9 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
                 'time': point.interval.start_time.strftime('%d/%m/%Y %H:%M:%S'),
                 'metric_type': metric_name.type,
                 'resource_type': resource_name.type,
+                'int_value': point.value.int64_value,
+                'double_value': point.value.double_value
             }
-
-            if agg:
-                dict_point['value'] = point.value.double_value
-            else:
-                dict_point['value'] = point.value.int64_value
 
             for key, value in metric_name.labels.items():
                 dict_point[key] = value
