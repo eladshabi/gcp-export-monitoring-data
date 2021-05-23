@@ -78,6 +78,7 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
             for key, value in resource_name.labels.items():
                 dict_point[key] = value
 
+
             points.append(dict_point)
 
     print(f"Writing the data points into local file {os.getcwd()}/{output_file_name}.json")
