@@ -1,4 +1,5 @@
 from google.cloud import monitoring_v3
+from google.cloud import bigquery
 from datetime import timedelta
 import argparse
 import time
@@ -78,7 +79,6 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
             for key, value in resource_name.labels.items():
                 dict_point[key] = value
 
-
             points.append(dict_point)
 
     print(f"Writing the data points into local file {os.getcwd()}/{output_file_name}.json")
@@ -89,6 +89,33 @@ def parse_and_write_as_json_new_line(data, output_file_name, agg):
             out_file.write("\n")
 
     print("Writing operation completed with no errors")
+
+    load_to_bq('elad-playground', 'exporter', output_file_name)
+
+
+def load_to_bq(project_id, dataset, table_name):
+
+    # Construct a BigQuery client object.
+    client = bigquery.Client()
+
+    # TODO(developer): Set table_id to the ID of the table to create.
+    table_id = f"{project_id}.{dataset}.{table_name}"
+
+    job_config = bigquery.LoadJobConfig(
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON, autodetect=True,
+    )
+
+    with open(f"./{table_name}.json", "rb") as source_file:
+        job = client.load_table_from_file(source_file, table_id, job_config=job_config)
+
+    job.result()  # Waits for the job to complete.
+
+    table = client.get_table(table_id)  # Make an API request.
+    print(
+        "Loaded {} rows and {} columns to {}".format(
+            table.num_rows, len(table.schema), table_id
+        )
+    )
 
 
 if __name__ == '__main__':
