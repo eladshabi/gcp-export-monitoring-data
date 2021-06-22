@@ -7,7 +7,9 @@ Cloud-Function-Name="metric_exporter"
 Cloud_Function-Service-Account="metric-exporter-cloud-function@elad-playground.iam.gserviceaccount.com" #monitoring.timeSeries.list (custom role), BigQuery Job User and Data Editor on the Dataset level.
 Runtime="python37"
 Source="./cloud_function_files" # Source file path for the cloud function
-Entry-Point=hello_world # Change it...
+Entry-Point="export" # Don't change
+TIMEOUT=540 # In seconds max=540
+MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
 EXPORT-NAME=daily_bucket_object_count
@@ -21,7 +23,8 @@ SCHEDULER-SERVICE-ACCOUNT="scheduler-test@elad-playground.iam.gserviceaccount.co
 Headers="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler"
 
 # BigQuery Parameters #
-BQ-DEST-TABLE=e2e-test-makefile
+BQ_DATASET="exporter"
+BQ_TABLE="staging_test"
 
 # System parameters - Don't change #
 MSG_TMP_DIR="./msg_tmp"
@@ -30,7 +33,8 @@ MSG_BODY_FILE_NAME="msg.json"
 
 deploy_cloud_function:
 	gcloud functions deploy $(Cloud-Function-Name) --region=$(REGION) --runtime=$(Runtime) --trigger-http --source=$(Source) \
-	--entry-point=$(Entry-Point) --project=$(PROJECT-ID) --service-account=$(Cloud_Function-Service-Account)
+	--entry-point=$(Entry-Point) --project=$(PROJECT-ID) --service-account=$(Cloud_Function-Service-Account) \
+	--memory=$(MEMORY) --timeout=$(TIMEOUT)
 
 schedule-metric-export: build_json_msg
 	gcloud scheduler jobs create http $(EXPORT-NAME) --project=$(PROJECT-ID) --schedule=$(Schedule) \
@@ -41,12 +45,11 @@ schedule-metric-export: build_json_msg
 	--time-zone=$(TIME-ZONE)
 
 build_json_msg:
-	python build_message_body.py --project=$(PROJECT-ID) --filter=$(FILTER) --weeks=$(WEEKS) --days=$(DAYS) --hours=$(HOURS) --output_file_name=$(BQ-DEST-TABLE)
+	python build_message_body.py --project=$(PROJECT-ID) --filter=$(FILTER) --weeks=$(WEEKS) --days=$(DAYS) --hours=$(HOURS) --bq_destination_dataset=$(BQ_DATASET) \
+	--bq_destination_table=$(BQ_TABLE) --MSG_TMP_DIR="./msg_tmp" --MSG_BODY_FILE_NAME="msg.json"
 
 clean:
 	rm $(MSG_TMP_DIR)"/"$(MSG_BODY_FILE_NAME)
-
-full_build_test: deploy_cloud_function schedule-metric-export clean
 
 full_delete:
 	gcloud scheduler jobs delete $(EXPORT-NAME) --project=$(PROJECT-ID)
@@ -58,4 +61,4 @@ delete_cloud_function:
 delete_scheduler:
 	gcloud scheduler jobs delete $(EXPORT-NAME) --project=$(PROJECT-ID)
 
-#TO DO - Complete the Cloud function creation, add clean and document all.
+full_build_test: deploy_cloud_function schedule-metric-export clean

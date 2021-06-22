@@ -18,7 +18,13 @@ if __name__ == '__main__':
     parser.add_argument("--hours",
                         required=True, type=int)
 
-    parser.add_argument("--output_file_name", required=True)
+    parser.add_argument("--MSG_TMP_DIR", required=True)
+
+    parser.add_argument("--MSG_BODY_FILE_NAME", required=True)
+
+    parser.add_argument("--bq_destination_dataset", required=True)
+
+    parser.add_argument("--bq_destination_table", required=True)
 
     args = parser.parse_args()
 
@@ -27,10 +33,11 @@ if __name__ == '__main__':
            "weeks": args.weeks,
            "days": args.days,
            "hours": args.hours,
-           "output_file_name": args.output_file_name}
+           "bq_destination_dataset": args.bq_destination_dataset,
+           "bq_destination_table": args.bq_destination_table}
 
-    if not os.path.exists("msg_tmp/"):
-        os.makedirs("msg_tmp/")
+    if not os.path.exists(args.MSG_TMP_DIR):
+        os.makedirs(f"{args.MSG_TMP_DIR}/")
 
-    with open('../../msg_tmp/msg.json', 'w') as fp:
+    with open(f"{args.MSG_TMP_DIR}/{args.MSG_BODY_FILE_NAME}", "w") as fp:
         json.dump(msg, fp)
