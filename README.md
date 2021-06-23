@@ -76,7 +76,7 @@ gcloud iam service-accounts create metric-exporter-cf-sa \
     --description="Cloud Function metric exporter service account" \
     --display-name="Cloud Functio metric exporter service account"
 ```
-The name of the service account is: create metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com
+The name of the service account is: metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com
 ```
 gcloud projects add-iam-policy-binding <PROJECT-ID> \
     --member="serviceAccount:metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com" \
