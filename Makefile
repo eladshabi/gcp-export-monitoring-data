@@ -1,10 +1,10 @@
 # General Parameters #
-PROJECT_ID="elad-playground"
+PROJECT_ID=<PROJECT-ID>
 
 # Cloud Function Parameters #
 CF_NAME="metric_exporter"
 CF_REGION="us-central1"
-CF_SA="metric-exporter-cloud-function@"$(PROJECT_ID)".iam.gserviceaccount.com" #monitoring.timeSeries.list (custom role), BigQuery Job User and Data Editor on the Dataset level.
+CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" #monitoring.timeSeries.list (custom role), BigQuery Job User and Data Editor on the Dataset level.
 RUNTIME="python37"
 SOURCE_PATH="./cloud_function_files" # Source file path for the cloud function
 ENTRY_POINT="export" # Don't change
@@ -12,14 +12,14 @@ TIMEOUT=540 # In seconds max=540
 MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
-EXPORT_NAME=daily_bucket_object_count
+EXPORT_NAME=<EXPORT-NAME>
 TIME_ZONE="UTC"
 SCHEDULE="* * * * *"
 WEEKS=0
 DAYS=0
 HOURS=1
 FILTER='metric.type = "storage.googleapis.com/storage/object_count"'
-SCHEDULER_SA="scheduler-test@"$(PROJECT_ID)".iam.gserviceaccount.com" # Cloud function invoker
+SCHEDULER_SA="metric-exporter-scheduler-sa"$(PROJECT_ID)".iam.gserviceaccount.com" # Cloud function invoker
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler"
 
 # BigQuery Parameters #

@@ -54,11 +54,11 @@ Before starting to configure the pipeline we will need to create BigQuery datase
 
 AS first step, please make sure you authenticated with your user using the gcloud SDK [link](https://cloud.google.com/sdk/gcloud/reference/auth/login) (please make sure you have permissions to create BigQuery Datasets, Cloud Functions and Cloud Scheduler)
 
-##Create BigQuery Dataset:
+## Create BigQuery Dataset:
 
 On the Makefile please fill the parameter BQ_LOCATION, PROJECT_ID, BQ_DATASET and run the following command: make create_bq_dataset.
 
-##Cloud Function service account:
+## Cloud Function service account:
 
 The cloud function will preform an API call to GCP Monitoring service and load data into BigQuery table, for that, we will create a custom role to follow GCP security recommendation of least privilege access including the "monitoring.timeSeries.list" (custom role), BigQuery Job User and Data Editor on the Dataset level.
 
@@ -76,7 +76,9 @@ gcloud iam service-accounts create metric-exporter-cf-sa \
     --description="Cloud Function metric exporter service account" \
     --display-name="Cloud Functio metric exporter service account"
 ```
+
 The name of the service account is: metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com
+
 ```
 gcloud projects add-iam-policy-binding <PROJECT-ID> \
     --member="serviceAccount:metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com" \
