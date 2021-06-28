@@ -58,7 +58,7 @@ In order to deploy the pipeline there are configuration parameters on the Makefi
 - BQ_LOCATION - BigQuery dataset location, Configure only at the first deployment.
 
 ### Authentication
-Please authenticate with your user using the gcloud SDK, for information please look at [gcloud auth login](https://cloud.google.com/sdk/gcloud/reference/auth/login).
+Please authenticate with your user using the gcloud SDK, for more information please look at [gcloud auth login](https://cloud.google.com/sdk/gcloud/reference/auth/login).
 
 ### Create BigQuery Dataset:
 
@@ -72,7 +72,7 @@ Please run the following command to export you project id:
 
 ```PROJECT_ID=<YOUR-PORJECT-ID>```
 
-### Function service account
+### Cloud Function service account
 
 The cloud function will preform an API call to GCP Monitoring service and load data into a BigQuery table, for that, we will create a custom role to follow [Least privilege](https://cloud.google.com/iam/docs/using-iam-securely#least_privilege) GCP IAM recommendation.
 
@@ -118,6 +118,7 @@ On the BigQuery UI, under your BigQuery project, click on expend node:
 ![alt text](images/BQ_project_expend.png)
 
 On this page you can see your datasets that you created on previews step under your project. Click on the tree dots to the right of the dataset name, and them click on "Open":
+
 ![alt text](images/BQ_open_dataset.png)
 
 On the next page, please click on "SHARE DATASET":
