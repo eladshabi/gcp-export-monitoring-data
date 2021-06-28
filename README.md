@@ -1,70 +1,84 @@
 # gcp-export-monitoring-data
 
+## Introduction
+
+### What it does?
+
 This project created to export time series data points from Google Cloud Monitoring and load it into Bigquery table.
 
+### Why do I need it?
+
+The GCP Metric Exporter project created to address the following points:
+
+* Data retention - Following the GCP Monitoring service [retention policy](https://cloud.google.com/monitoring/quotas#data_retention_policy), metrics data will be stored for a limited time, most of the GCP services metrics will retain for 6 weeks, and then will be deleted. 
+* Data analysis - Storing metric data in a BigQuery provide a better way to perform a complex analysis of GCP services over time using standard sql.
+
+### Architecture 
 To do: Add architecture of the project (Scheduler > Cloud Function > BQ)
 
-In order to deploy the pipeline there are configuration parameters on the Makefile:
+## Installation
+As a first step, please clone this repository into your local directory by running the following commands:
 
-PROJECT_ID - GCP project id.
+```
+cd <LOCAL-DIR-PATH>
+```
 
-CF_REGION - GCP region for deploying the Cloud Function.
+```
+git clone https://github.com/eladshabi/gcp-export-monitoring-data.git
+```
 
-CF_SA - Cloud Function service account name.
+### Configure the Makefile parameters
 
-RUNTIME - The Cloud function python run time version. 
+In order to deploy the pipeline there are configuration parameters on the Makefile that needs to be configured:
 
-SOURCE_PATH - Local path to the source code of the Cloud Function (Don't change).
+- PROJECT_ID - GCP project id.
 
-ENTRY_POINT - The function name to run (Don't change).
+- CF_REGION - GCP region for deploying the Cloud Function.
 
-TIMEOUT - Cloud Function timeout (MAX=540).
+- TIMEOUT - Cloud Function timeout (MAX=540).
 
-MEMORY - Cloud Function memory in MB (MAX=8192MB).
+- MEMORY - Cloud Function memory in MB (MAX=8192MB).
 
-EXPORT_NAME - Cloud Scheduler job name for specific export.
+- EXPORT_NAME - Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery.
 
-TIME_ZONE - Time zone of the Cloud Scheduler.
+- TIME_ZONE - Time zone of the Cloud Scheduler.
 
-SCHEDULE - Cron expression for triggering the export [doc](https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules).
+- SCHEDULE - [Cron expression](https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules) for triggering the export (Cloud Scheduler).
 
-WEEKS - The number of weeks back to get the metric data for each runtime.
+- WEEKS - The number of weeks back to get the metric data for each runtime.
 
-DAYS - The number of days back to get the metric data for each runtime.
+- DAYS - The number of days back to get the metric data for each runtime.
 
-HOURS - The number of hours back to get the metric data for each runtime.
+- HOURS - The number of hours back to get the metric data for each runtime.
 
-FILTER - The cloud monitoring [filter expression](https://cloud.google.com/monitoring/api/v3/filters), keep the pattern of single quote (') on the outer part of the filter and double quote (") inside the filter. Example: FILTER='metric.type = "storage.googleapis.com/storage/object_count"'
+- FILTER - The cloud monitoring [filter expression](https://cloud.google.com/monitoring/api/v3/filters), keep the pattern of single quote (') on the outer part of the filter and double quote (") inside the filter. Example: ```FILTER='metric.type = "storage.googleapis.com/storage/object_count"'```
 
-SCHEDULER_SA - Cloud Scheduler service account name.
+- BQ_DATASET - BigQuery dataset name, Configure only at the first deployment.
 
-HEADERS - Headers to send for the Cloud Function. (Don't change).
+- BQ_LOCATION - BigQuery dataset location, Configure only at the first deployment.
 
-BQ_DATASET - BigQuery dataset name.
+### Authentication
+Please authenticate with your user using the gcloud SDK, for information please look at [gcloud auth login](https://cloud.google.com/sdk/gcloud/reference/auth/login).
 
-BQ_TABLE - BigQuery table name.
+### Create BigQuery Dataset:
 
-BQ_LOCATION - BigQuery dataset location.
+In order to create the BigQuery dataset run the following command:
 
-MSG_TMP_DIR - internal directory path for temporary files (Don't change). 
+```make create_bq_dataset```
 
-MSG_BODY_FILE_NAME - internal temporary file name (Don't change).
+### Exporting environment variable
 
-Before starting to configure the pipeline we will need to create BigQuery dataset and, 2 dedicated service account that will make use for the Cloud Function, and the Cloud Scheduler:
+Please run the following command to export you project id:
 
-AS first step, please make sure you authenticated with your user using the gcloud SDK [link](https://cloud.google.com/sdk/gcloud/reference/auth/login) (please make sure you have permissions to create BigQuery Datasets, Cloud Functions and Cloud Scheduler)
+```PROJECT_ID=<YOUR-PORJECT-ID>```
 
-## Create BigQuery Dataset:
+### Function service account
 
-On the Makefile please fill the parameter BQ_LOCATION, PROJECT_ID, BQ_DATASET and run the following command: make create_bq_dataset.
-
-## Cloud Function service account:
-
-The cloud function will preform an API call to GCP Monitoring service and load data into BigQuery table, for that, we will create a custom role to follow GCP security recommendation of least privilege access including the "monitoring.timeSeries.list" (custom role), BigQuery Job User and Data Editor on the Dataset level.
+The cloud function will preform an API call to GCP Monitoring service and load data into a BigQuery table, for that, we will create a custom role to follow [Least privilege](https://cloud.google.com/iam/docs/using-iam-securely#least_privilege) GCP IAM recommendation.
 
 Please run the following command to create custom role with the monitoring.timeSeries.list permission:
 ```
-gcloud iam roles create metric_exporter_cf_monitoring_api_role --project=<PROJECT-ID> \
+gcloud iam roles create metric_exporter_cf_monitoring_api_role --project=${PROJECT_ID} \
   --title=metric_exporter_cf_monitoring_api_role --description="Role for Monitoring API timeSeries.list" \
   --permissions=monitoring.timeSeries.list --stage=GA
 ```
@@ -77,23 +91,48 @@ gcloud iam service-accounts create metric-exporter-cf-sa \
     --display-name="Cloud Functio metric exporter service account"
 ```
 
-The name of the service account is: metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com
-
 ```
-gcloud projects add-iam-policy-binding <PROJECT-ID> \
-    --member="serviceAccount:metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com" \
-    --role="projects/<PROJECT-ID>/roles/metric_exporter_cf_monitoring_api_role"
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="projects/{PROJECT_ID}/roles/metric_exporter_cf_monitoring_api_role"
 ```
 
 ```
-gcloud projects add-iam-policy-binding <PROJECT-ID> \
-    --member="serviceAccount:metric-exporter-cf-sa@<PROJECT-ID>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/bigquery.user"
 ```
 
-The last permission for the Cloud Function service account is the Data Editor on the Dataset level, please follow the instruction from the [GCP documentation](https://cloud.google.com/bigquery/docs/dataset-access-controls#granting_access_to_a_dataset) and grant to the Cloud function service account the Data Editor on your BigQuery Dataset.
+The last permission for the Cloud Function service account is the Data Editor on the Dataset level, please follow the bellow steps (irrelevant information blacked):
 
-## Cloud Scheduler Service account 
+Please copy the cloud function service account name, you can get it by running the following command:
+
+```make get_cf_sa_name```
+
+On the GCP console please navigate to Bigquery:
+
+![alt text](images/BQ_nav.png)
+
+On the BigQuery UI, under your BigQuery project, click on expend node:
+
+![alt text](images/BQ_project_expend.png)
+
+On this page you can see your datasets that you created on previews step under your project. Click on the tree dots to the right of the dataset name, and them click on "Open":
+![alt text](images/BQ_open_dataset.png)
+
+On the next page, please click on "SHARE DATASET":
+
+![alt text](images/BQ_share_dataset.png)
+
+On the new page, please enter the service account name (in blue), and for the role, please click on "Select a role" and chose BigQuery > BigQuery Data Editor: 
+
+![alt text](images/BQ_dataset_permissions.png)
+
+Now please click on "ADD" and on "Done".
+
+For more information please look at [granting access to a dataset](https://cloud.google.com/bigquery/docs/dataset-access-controls#granting_access_to_a_dataset).
+
+### Cloud Scheduler Service account 
 Create the Cloud Scheduler service account:
 
 ```
@@ -105,8 +144,8 @@ gcloud iam service-accounts create metric-exporter-scheduler-sa \
 Grant to the scheduler service account the "Cloud function invoker" role:
 
 ```
-gcloud projects add-iam-policy-binding <PROJECT-ID> \
-    --member="serviceAccount:metric-exporter-scheduler-sa@<PROJECT-ID>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding {PROJECT_ID} \
+    --member="serviceAccount:metric-exporter-scheduler-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/cloudfunctions.invoker"
 ```
 
