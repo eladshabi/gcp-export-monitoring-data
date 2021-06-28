@@ -144,7 +144,7 @@ gcloud iam service-accounts create metric-exporter-scheduler-sa \
 Grant to the scheduler service account the "Cloud function invoker" role:
 
 ```
-gcloud projects add-iam-policy-binding {PROJECT_ID} \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:metric-exporter-scheduler-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/cloudfunctions.invoker"
 ```
