@@ -1,4 +1,4 @@
-# gcp-export-monitoring-data
+# GCP Metric Exporter
 
 ## Introduction
 
@@ -14,7 +14,19 @@ The GCP Metric Exporter project created to address the following points:
 * Data analysis - Storing metric data in a BigQuery provide a better way to perform a complex analysis of GCP services over time using standard sql.
 
 ### Architecture 
-To do: Add architecture of the project (Scheduler > Cloud Function > BQ)
+
+The Metric Exporter has 3 different GCP services:
+
+1) Cloud Scheduler - For each metric export we will create new cloud scheduler that contains the required information of the export job the message body and to manage the HTTP trigger.
+
+
+2) Cloud Function - This function is responsible for executing the export step using the information provided by the cloud scheduler and triggered by HTTP endpoint, and loading the data into the BigQuery.
+
+
+3) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
+
+
+![alt text](images/Metric Exporter Architecture.png)
 
 ## Installation
 As a first step, please clone this repository into your local directory by running the following commands:
