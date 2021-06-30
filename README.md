@@ -26,7 +26,7 @@ The Metric Exporter has 3 different GCP services:
 3) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
 
 
-![alt text](images/Metric Exporter Architecture.png)
+![alt text](images/Metric_Exporter_Architecture.png)
 
 ## Installation
 As a first step, please clone this repository into your local directory by running the following commands:
