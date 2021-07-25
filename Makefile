@@ -1,18 +1,18 @@
 # General Parameters #
-PROJECT_ID=<PROJECT-ID>
+PROJECT_ID="elad-playground"
 
 # Cloud Function Parameters #
 CF_NAME="metric_exporter" # Don't change
 CF_REGION="us-central1"
 CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" # Don't change | monitoring.timeSeries.list (custom role), BigQuery Job User and Data Editor on the Dataset level.
 RUNTIME="python37" # Don't change
-SOURCE_PATH="./cloud_function_files" # Don't change | Source file path for the cloud function
+SOURCE_PATH="./cloud_function" # Don't change | Source file path for the cloud function
 ENTRY_POINT="export" # Don't change
 TIMEOUT=540 # In seconds max=540
 MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
-EXPORT_NAME=<EXPORT-NAME> # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
+EXPORT_NAME="export_test_1" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
 TIME_ZONE="UTC"
 SCHEDULE="* * * * *" # Change by your requirements
 WEEKS=0
@@ -23,9 +23,13 @@ SCHEDULER_SA="metric-exporter-scheduler-sa@"$(PROJECT_ID)".iam.gserviceaccount.c
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" # Don't change
 
 # BigQuery Parameters #
-BQ_DATASET=<DATASET-NAME> # Configure only at the first deployment
+BQ_DATASET="tests" # Configure only at the first deployment
 BQ_TABLE=$(EXPORT_NAME)
 BQ_LOCATION="US" #Configure only at the first deployment
+
+# GCS Bucket Parameters#
+BUCKET_NAME="elad-playground"
+PAGE_SIZE=250
 
 # System Parameters - Don't change #
 MSG_TMP_DIR="./msg_tmp"
@@ -39,7 +43,7 @@ deploy_cloud_function:
 
 deploy_scheduler: build_json_msg
 	gcloud scheduler jobs create http $(EXPORT_NAME) --project=$(PROJECT_ID) --schedule=$(SCHEDULE) \
-	--uri="https://"$(CF_REGION)"-"$(PROJECT_ID)".cloudfunctions.net/"$(CF_NAME) --http-method=POST \
+	--uri="https://$(CF_REGION)-$(PROJECT_ID).cloudfunctions.net/$(CF_NAME)" --http-method=POST \
 	--headers=$(HEADERS) \
 	--oidc-service-account-email=$(SCHEDULER_SA) \
 	--message-body-from-file=$(MSG_TMP_DIR)"/"$(MSG_BODY_FILE_NAME) \
@@ -47,7 +51,7 @@ deploy_scheduler: build_json_msg
 
 build_json_msg:
 	python build_message_body.py --project=$(PROJECT_ID) --filter=$(FILTER) --weeks=$(WEEKS) --days=$(DAYS) --hours=$(HOURS) --bq_destination_dataset=$(BQ_DATASET) \
-	--bq_destination_table=$(BQ_TABLE) --MSG_TMP_DIR=$(MSG_TMP_DIR) --MSG_BODY_FILE_NAME=$(MSG_BODY_FILE_NAME)
+	--bq_destination_table=$(BQ_TABLE) --MSG_TMP_DIR=$(MSG_TMP_DIR) --MSG_BODY_FILE_NAME=$(MSG_BODY_FILE_NAME) --BUCKET_NAME=$(BUCKET_NAME) --PAGE_SIZE=$(PAGE_SIZE)
 
 clean:
 	rm $(MSG_TMP_DIR)"/"$(MSG_BODY_FILE_NAME)

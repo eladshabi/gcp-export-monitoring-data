@@ -26,6 +26,10 @@ if __name__ == '__main__':
 
     parser.add_argument("--bq_destination_table", required=True)
 
+    parser.add_argument("--BUCKET_NAME", required=True)
+
+    parser.add_argument("--PAGE_SIZE", required=True, type=int)
+
     args = parser.parse_args()
 
     msg = {"project_id": args.project,
@@ -34,7 +38,9 @@ if __name__ == '__main__':
            "days": args.days,
            "hours": args.hours,
            "bq_destination_dataset": args.bq_destination_dataset,
-           "bq_destination_table": args.bq_destination_table}
+           "bq_destination_table": args.bq_destination_table,
+           "page_size": args.PAGE_SIZE,
+           "bucket_name": args.BUCKET_NAME}
 
     if not os.path.exists(args.MSG_TMP_DIR):
         os.makedirs(f"{args.MSG_TMP_DIR}/")
