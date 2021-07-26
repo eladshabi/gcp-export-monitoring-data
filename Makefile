@@ -41,13 +41,16 @@ deploy_cloud_function:
 	--entry-point=$(ENTRY_POINT) --project=$(PROJECT_ID) --service-account=$(CF_SA) \
 	--memory=$(MEMORY) --timeout=$(TIMEOUT)
 
-deploy_scheduler: build_json_msg
+deploy_scheduler: test_filter_api build_json_msg
 	gcloud scheduler jobs create http $(EXPORT_NAME) --project=$(PROJECT_ID) --schedule=$(SCHEDULE) \
-	--uri="https://$(CF_REGION)-$(PROJECT_ID).cloudfunctions.net/$(CF_NAME)" --http-method=POST \
+	--uri=https://$(CF_REGION)-$(PROJECT_ID).cloudfunctions.net/$(CF_NAME) --http-method=POST \
 	--headers=$(HEADERS) \
 	--oidc-service-account-email=$(SCHEDULER_SA) \
 	--message-body-from-file=$(MSG_TMP_DIR)"/"$(MSG_BODY_FILE_NAME) \
 	--time-zone=$(TIME_ZONE)
+
+test_filter_api:
+	python validate_filter.py --project=$(PROJECT_ID) --filter=$(FILTER)
 
 build_json_msg:
 	python build_message_body.py --project=$(PROJECT_ID) --filter=$(FILTER) --weeks=$(WEEKS) --days=$(DAYS) --hours=$(HOURS) --bq_destination_dataset=$(BQ_DATASET) \
@@ -74,3 +77,5 @@ get_scheduler_sa_name:
 schedule_metric_export: deploy_scheduler clean
 
 full_build: deploy_cloud_function schedule_metric_export
+
+

@@ -12,9 +12,9 @@ monitoring_client = monitoring_v3.MetricServiceClient()
 export_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_interval(weeks_ago, days_ago, hours_ago):
+def get_interval(weeks_ago, days_ago, hours_ago, seconds_ago=0):
     time_now = time.time()
-    start_time = get_second_delta(weeks_ago, days_ago, hours_ago)
+    start_time = get_second_delta(weeks_ago, days_ago, hours_ago, seconds_ago)
     seconds = int(time_now)
     nanos = int((time_now - seconds) * 10 ** 9)
 
@@ -28,14 +28,20 @@ def get_interval(weeks_ago, days_ago, hours_ago):
     return interval
 
 
-def get_request_body(project_id, metric_filter, interval, page_size):
+def get_request_body(project_id, metric_filter, interval, page_size, full_view=True):
     project_name = f"projects/{project_id}"
+
+    if full_view:
+        view = monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL
+    else:
+        view = monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.HEADERS
+
     request = {
         "name": project_name,
         "filter": metric_filter,
         "interval": interval,
         "aggregation": None,
-        "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+        "view": view,
         "page_size": page_size,
     }
     return request
@@ -51,8 +57,8 @@ def get_metric_data(request):
     return results
 
 
-def get_second_delta(weeks, days, hours):
-    return timedelta(weeks=weeks, days=days, hours=hours).total_seconds()
+def get_second_delta(weeks, days, hours, seconds):
+    return timedelta(weeks=weeks, days=days, hours=hours, seconds=seconds).total_seconds()
 
 
 def parse_as_json_new_line(data):
