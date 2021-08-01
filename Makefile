@@ -3,7 +3,7 @@ PROJECT_ID=<PROJECT-ID>
 
 # Cloud Function Parameters #
 CF_NAME="metric_exporter" # Don't change
-CF_REGION="us-central1" <Cloud Function region>
+CF_REGION="us-central1" <Cloud-Function-Region>
 CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" # Don't change
 RUNTIME="python37"
 SOURCE_PATH="./cloud_function" # Don't change | Source file path for the cloud function
@@ -23,7 +23,7 @@ SCHEDULER_SA="metric-exporter-scheduler-sa@"$(PROJECT_ID)".iam.gserviceaccount.c
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" # Don't change
 
 # BigQuery Parameters #
-BQ_DATASET=<BigQuery Dataset> # Configure only at the first deployment
+BQ_DATASET=<BigQuery-Dataset> # Configure only at the first deployment
 BQ_TABLE=$(EXPORT_NAME)
 BQ_LOCATION="US" #Configure only at the first deployment
 

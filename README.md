@@ -1,6 +1,6 @@
 # GCP Metric Exporter
 
-##Introduction
+## Introduction
 
 ### What it does?
 
@@ -28,7 +28,7 @@ The Metric Exporter has 3 different GCP services:
 
 ![alt text](images/Metric_Exporter_Architecture.png)
 
-##Installation
+## Installation
 
 ### Configure the Makefile parameters
 
@@ -182,7 +182,7 @@ In order to deploy the Cloud Function and Schedule the first export please run t
 
 When you get the following question:
 
-Allow unauthenticated invocations of new function [metric_exporter]?
+```Allow unauthenticated invocations of new function [metric_exporter]?```
 
 Please type "N" in order to prevent any unauthenticated invocation.
 
