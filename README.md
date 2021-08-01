@@ -88,7 +88,7 @@ Please run the following command to export you project id:
 
 ```
 PROJECT_ID=<YOUR-PORJECT-ID>
-BUKCRT_NAME=<GCS-BUCKET_NAME>
+BUCKET_NAME=<GCS-BUCKET_NAME>
 ```
 
 ### Cloud Function service account
