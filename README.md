@@ -1,6 +1,10 @@
 # GCP Metric Exporter
 
-## Introduction
+* [Introduction](#Introduction)
+
+
+* [Installation](#Installation)
+##Introduction
 
 ### What it does?
 
@@ -28,7 +32,7 @@ The Metric Exporter has 3 different GCP services:
 
 ![alt text](images/Metric_Exporter_Architecture.png)
 
-## Installation
+##Installation
 
 ### Configure the Makefile parameters
 
