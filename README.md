@@ -29,15 +29,6 @@ The Metric Exporter has 3 different GCP services:
 ![alt text](images/Metric_Exporter_Architecture.png)
 
 ## Installation
-As a first step, please clone this repository into your local directory by running the following commands:
-
-```
-cd <LOCAL-DIR-PATH>
-```
-
-```
-git clone https://github.com/eladshabi/gcp-export-monitoring-data.git
-```
 
 ### Configure the Makefile parameters
 
@@ -87,8 +78,8 @@ In order to create the BigQuery dataset run the following command:
 Please run the following command to export you project id:
 
 ```
-PROJECT_ID=<YOUR-PORJECT-ID>
-BUCKET_NAME=<GCS-BUCKET_NAME>
+export PROJECT_ID=<YOUR-PORJECT-ID>
+export BUCKET_NAME=<GCS-BUCKET_NAME>
 ```
 
 ### Cloud Function service account

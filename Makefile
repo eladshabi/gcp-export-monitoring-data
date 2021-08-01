@@ -1,20 +1,20 @@
 # General Parameters #
-PROJECT_ID="elad-playground"
+PROJECT_ID=<PROJECT-ID>
 
 # Cloud Function Parameters #
 CF_NAME="metric_exporter" # Don't change
-CF_REGION="us-central1"
-CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" # Don't change | monitoring.timeSeries.list (custom role), BigQuery Job User and Data Editor on the Dataset level.
-RUNTIME="python37" # Don't change
+CF_REGION="us-central1" <Cloud Function region>
+CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" # Don't change
+RUNTIME="python37"
 SOURCE_PATH="./cloud_function" # Don't change | Source file path for the cloud function
 ENTRY_POINT="export" # Don't change
 TIMEOUT=540 # In seconds max=540
 MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
-EXPORT_NAME="staging_tbl" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
+EXPORT_NAME=<EXPORT-NAME> # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
 TIME_ZONE="UTC"
-SCHEDULE="* * * * *" # Change by your requirements
+SCHEDULE="* * * * *" # Change by your requirements - the cron expression to trigger the export.
 WEEKS=0
 DAYS=0
 HOURS=1
@@ -23,12 +23,12 @@ SCHEDULER_SA="metric-exporter-scheduler-sa@"$(PROJECT_ID)".iam.gserviceaccount.c
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" # Don't change
 
 # BigQuery Parameters #
-BQ_DATASET="metric_exporter_staging_dataset" # Configure only at the first deployment
+BQ_DATASET=<BigQuery Dataset> # Configure only at the first deployment
 BQ_TABLE=$(EXPORT_NAME)
 BQ_LOCATION="US" #Configure only at the first deployment
 
 # GCS Bucket Parameters#
-BUCKET_NAME="elad-playground"
+BUCKET_NAME=<BUCKET-NAME>
 PAGE_SIZE=250
 
 # System Parameters - Don't change #
@@ -77,5 +77,3 @@ get_scheduler_sa_name:
 schedule_metric_export: deploy_scheduler clean
 
 full_deploy: deploy_cloud_function schedule_metric_export
-
-
