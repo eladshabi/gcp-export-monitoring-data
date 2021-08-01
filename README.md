@@ -86,7 +86,10 @@ In order to create the BigQuery dataset run the following command:
 
 Please run the following command to export you project id:
 
-```PROJECT_ID=<YOUR-PORJECT-ID>```
+```
+PROJECT_ID=<YOUR-PORJECT-ID>
+BUKCRT_NAME=<GCS-BUCKET_NAME>
+```
 
 ### Cloud Function service account
 
@@ -111,32 +114,23 @@ gcloud iam service-accounts create metric-exporter-cf-sa \
 Monitoring API:
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="projects/{PROJECT_ID}/roles/metric_exporter_cf_monitoring_api_role"
+    --member="serviceAccount:metric-exporter-cf-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="projects/${PROJECT_ID}/roles/metric_exporter_cf_monitoring_api_role"
 ```
 
 BigQuery:
 
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
+    --member="serviceAccount:metric-exporter-cf-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/bigquery.user"
 ```
 
 GCS:
 
 ```
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="roles/storage.objectViewer"
+gsutil iam ch serviceAccount:metric-exporter-cf-sa@${PROKECT_ID}.iam.gserviceaccount.com:legacyBucketWriter gs://{BUCKET_NAME}
 ```
-
-```
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="roles/storage.objectCreator"
-```
-
 
 
 The last permission for the Cloud Function service account is the Data Editor on the Dataset level, please follow the bellow steps (irrelevant information blacked):
@@ -182,7 +176,7 @@ Grant to the scheduler service account the "Cloud function invoker" role:
 
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:metric-exporter-scheduler-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
+    --member="serviceAccount:metric-exporter-scheduler-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/cloudfunctions.invoker"
 ```
 

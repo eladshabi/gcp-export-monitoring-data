@@ -12,7 +12,7 @@ TIMEOUT=540 # In seconds max=540
 MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
-EXPORT_NAME="export_test_1" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
+EXPORT_NAME="staging_tbl" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
 TIME_ZONE="UTC"
 SCHEDULE="* * * * *" # Change by your requirements
 WEEKS=0
@@ -23,7 +23,7 @@ SCHEDULER_SA="metric-exporter-scheduler-sa@"$(PROJECT_ID)".iam.gserviceaccount.c
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" # Don't change
 
 # BigQuery Parameters #
-BQ_DATASET="tests" # Configure only at the first deployment
+BQ_DATASET="metric_exporter_staging_dataset" # Configure only at the first deployment
 BQ_TABLE=$(EXPORT_NAME)
 BQ_LOCATION="US" #Configure only at the first deployment
 
