@@ -1,10 +1,5 @@
 # GCP Metric Exporter
 
-* [Introduction](#Introduction)
-
-
-* [Installation](#Installation)
-
 ##Introduction
 
 ### What it does?
