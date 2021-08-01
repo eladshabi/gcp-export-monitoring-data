@@ -69,6 +69,10 @@ In order to deploy the pipeline there are configuration parameters on the Makefi
 
 - BQ_LOCATION - BigQuery dataset location, Configure only at the first deployment.
 
+- PAGE_SIZE - The pagination size for splitting the API response by the number of data points.
+
+- BUCKET_NAME - The GCS bucket name which hold parsed data points that will be load into BQ.
+
 ### Authentication
 Please authenticate with your user using the gcloud SDK, for more information please look at [gcloud auth login](https://cloud.google.com/sdk/gcloud/reference/auth/login).
 
@@ -102,18 +106,38 @@ gcloud iam service-accounts create metric-exporter-cf-sa \
     --description="Cloud Function metric exporter service account" \
     --display-name="Cloud Functio metric exporter service account"
 ```
+### Grant permissions
 
+Monitoring API:
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
     --role="projects/{PROJECT_ID}/roles/metric_exporter_cf_monitoring_api_role"
 ```
 
+BigQuery:
+
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/bigquery.user"
 ```
+
+GCS:
+
+```
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+```
+
+```
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:metric-exporter-cf-sa@{PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="roles/storage.objectCreator"
+```
+
+
 
 The last permission for the Cloud Function service account is the Data Editor on the Dataset level, please follow the bellow steps (irrelevant information blacked):
 
@@ -162,4 +186,15 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --role="roles/cloudfunctions.invoker"
 ```
 
-TO DO - finish the readme...
+## Deploy
+<b> Please make sure that all the parameter in the make file are correct before running the following.</b>
+
+Now we are all set for deploy.
+
+In order to deploy the Cloud Function and Schedule the first export please run the command:
+
+```make full_deploy```
+
+In case that you already have a Cloud Function, and you want to deploy on new export, please run the following command to deploy new cloud scheduler:
+
+```make schedule_metric_export```

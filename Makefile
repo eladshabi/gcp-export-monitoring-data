@@ -76,6 +76,6 @@ get_scheduler_sa_name:
 
 schedule_metric_export: deploy_scheduler clean
 
-full_build: deploy_cloud_function schedule_metric_export
+full_deploy: deploy_cloud_function schedule_metric_export
 
 
