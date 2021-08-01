@@ -11,7 +11,7 @@ This project created to export time series data points from Google Cloud Monitor
 The GCP Metric Exporter project created to address the following points:
 
 * Data retention - Following the GCP Monitoring service [retention policy](https://cloud.google.com/monitoring/quotas#data_retention_policy), metrics data will be stored for a limited time, most of the GCP services metrics will retain for 6 weeks, and then will be deleted. 
-* Data analysis - Storing metric data in a BigQuery provide a better way to perform a complex analysis of GCP services over time using standard sql.
+* Data analysis - Storing metric data in a BigQuery provide a better way to perform a complex analysis of GCP services over time using Standard SQL.
 
 ### Architecture 
 
@@ -19,11 +19,11 @@ The Metric Exporter has 3 different GCP services:
 
 1) Cloud Scheduler - For each metric export we will create new cloud scheduler that contains the required information of the export job the message body and to manage the HTTP trigger.
 
-
 2) Cloud Function - This function is responsible for executing the export step using the information provided by the cloud scheduler and triggered by HTTP endpoint, and loading the data into the BigQuery.
 
+3) Cloud Storage - The cloud function will make the API call and split the response into different files (using the parameter PAGE_SIZE), and will store it on GCS for the load job into BQ.  
 
-3) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
+4) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
 
 
 ![alt text](images/Metric_Exporter_Architecture.png)
@@ -129,7 +129,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 GCS:
 
 ```
-gsutil iam ch serviceAccount:metric-exporter-cf-sa@${PROKECT_ID}.iam.gserviceaccount.com:legacyBucketWriter gs://{BUCKET_NAME}
+gsutil iam ch serviceAccount:metric-exporter-cf-sa@${PROJECT_ID}.iam.gserviceaccount.com:legacyBucketWriter gs://${BUCKET_NAME}
 ```
 
 
@@ -188,6 +188,12 @@ Now we are all set for deploy.
 In order to deploy the Cloud Function and Schedule the first export please run the command:
 
 ```make full_deploy```
+
+When you get the following question:
+
+Allow unauthenticated invocations of new function [metric_exporter]?
+
+Please type "N" in order to prevent any unauthenticated invocation.
 
 In case that you already have a Cloud Function, and you want to deploy on new export, please run the following command to deploy new cloud scheduler:
 
