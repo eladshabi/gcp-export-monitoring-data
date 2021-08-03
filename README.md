@@ -13,9 +13,7 @@ The GCP Metric Exporter project created to address the following points:
 * Data retention - Following the GCP Monitoring service [retention policy](https://cloud.google.com/monitoring/quotas#data_retention_policy), metrics data will be stored for a limited time, most of the GCP services metrics will retain for 6 weeks, and then will be deleted. 
 * Data analysis - Storing metric data in a BigQuery provide a better way to perform a complex analysis of GCP services over time using Standard SQL.
 
-### Architecture 
-
-The Metric Exporter has 3 different GCP services:
+### Architecture
 
 1) Cloud Scheduler - For each metric export we will create new cloud scheduler that contains the required information of the export job the message body and to manage the HTTP trigger.
 
@@ -172,7 +170,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 ```
 
 ## Deploy
-<b> Please make sure that all the parameter in the make file are correct before running the following.</b>
+<b> Please make sure that all the parameter in the makefile are correct before running the following.</b>
 
 Now we are all set for deploy.
 

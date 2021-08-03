@@ -1,9 +1,9 @@
 # General Parameters #
-PROJECT_ID=<PROJECT-ID>
+PROJECT_ID="elad-playground"
 
 # Cloud Function Parameters #
 CF_NAME="metric_exporter" # Don't change
-CF_REGION="us-central1" <Cloud-Function-Region>
+CF_REGION="us-central1"
 CF_SA="metric-exporter-cf-sa@"$(PROJECT_ID)".iam.gserviceaccount.com" # Don't change
 RUNTIME="python37"
 SOURCE_PATH="./cloud_function" # Don't change | Source file path for the cloud function
@@ -12,7 +12,7 @@ TIMEOUT=540 # In seconds max=540
 MEMORY=128 # In MB max=8192MB
 
 # Cloud Scheduler Parameters #
-EXPORT_NAME=<EXPORT-NAME> # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
+EXPORT_NAME="staging2" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
 TIME_ZONE="UTC"
 SCHEDULE="* * * * *" # Change by your requirements - the cron expression to trigger the export.
 WEEKS=0
@@ -23,12 +23,12 @@ SCHEDULER_SA="metric-exporter-scheduler-sa@"$(PROJECT_ID)".iam.gserviceaccount.c
 HEADERS="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" # Don't change
 
 # BigQuery Parameters #
-BQ_DATASET=<BigQuery-Dataset> # Configure only at the first deployment
+BQ_DATASET="metric_exporter_staging_dataset" # Configure only at the first deployment
 BQ_TABLE=$(EXPORT_NAME)
 BQ_LOCATION="US" #Configure only at the first deployment
 
 # GCS Bucket Parameters#
-BUCKET_NAME=<BUCKET-NAME>
+BUCKET_NAME="elad-playground"
 PAGE_SIZE=250
 
 # System Parameters - Don't change #
@@ -43,7 +43,7 @@ deploy_cloud_function:
 
 deploy_scheduler: test_filter_api build_json_msg
 	gcloud scheduler jobs create http $(EXPORT_NAME) --project=$(PROJECT_ID) --schedule=$(SCHEDULE) \
-	--uri=https://$(CF_REGION)-$(PROJECT_ID).cloudfunctions.net/$(CF_NAME) --http-method=POST \
+	--uri=$https://$(CF_REGION)-$(PROJECT_ID).cloudfunctions.net/$(CF_NAME) --http-method=POST \
 	--headers=$(HEADERS) \
 	--oidc-service-account-email=$(SCHEDULER_SA) \
 	--message-body-from-file=$(MSG_TMP_DIR)"/"$(MSG_BODY_FILE_NAME) \
